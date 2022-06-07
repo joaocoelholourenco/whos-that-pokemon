@@ -6,20 +6,20 @@ interface Props {
 export const Container = styled.div<Props>`
   @keyframes loading {
     0% {
-      transform: rotate(0);
+      transform: scale(1);
     }
     50% {
-      transform: rotate(3deg);
+      transform: scale(1.05);
     }
     100% {
-      transform: rotate(-3deg);
+      transform: scale(1);
     }
   }
   background-image: url(${(p) => p.image_src});
   background-repeat: no-repeat;
   background-size: cover;
   :hover {
-    animation: loading 0.5s linear;
+    animation: loading 0.5s ease;
     cursor: pointer;
     background-size: contain;
   }
