@@ -1,25 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Navigate, Route } from "react-router-dom";
+import { AuthProvider, useAuthContext } from "./contexts/AuthContext";
+
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import { ReactElement } from "react";
+import { ModalProvider } from "./contexts/ModalContext";
+import { PokemonProvider } from "./contexts/PokemonContext";
+
+interface CustomRouteProps {
+  children: ReactElement;
+}
+
+const CustomRoute = ({ children }: CustomRouteProps) => {
+  const { authenticated } = useAuthContext();
+
+  if (!authenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <ModalProvider>
+          <PokemonProvider>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <CustomRoute>
+                    <Home />
+                  </CustomRoute>
+                }
+              />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </PokemonProvider>
+        </ModalProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
