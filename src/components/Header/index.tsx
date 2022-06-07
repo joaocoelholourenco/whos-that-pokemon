@@ -7,7 +7,16 @@ export function Header() {
   return (
     <Container>
       <img src="/images/Pokemon-Logo.png" alt="" />
-      <Button onClick={signOut}>SignOut</Button>
+      <Button
+        style={{
+          color: "#FAC705",
+          fontSize: "1.25rem",
+          alignSelf: "center",
+        }}
+        onClick={signOut}
+      >
+        SignOut
+      </Button>
     </Container>
   );
 }

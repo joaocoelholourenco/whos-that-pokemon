@@ -20,7 +20,7 @@ const AuthContext = createContext({} as AuthContextData);
 
 function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
   function signIn({ email, password }: SignInFormProps): void {
     setAuthenticated(true);
