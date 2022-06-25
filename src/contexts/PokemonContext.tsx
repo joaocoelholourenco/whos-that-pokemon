@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { api } from "../services/api";
+import { getImageUrlWithId } from "../utils/getImageUrl";
 
 interface ModalProviderProps {
   children: ReactNode;
@@ -27,6 +28,7 @@ type PokemonContextData = {
   getPokemons: () => Promise<Pokemon[]>;
   pokemon: Pokemon;
   pokemons: Pokemon[];
+  loading: boolean;
 };
 
 const PokemonContext = createContext({} as PokemonContextData);
@@ -35,6 +37,7 @@ const PokemonProvider = ({ children }: ModalProviderProps) => {
   const [pokemon, setPokemon] = useState({} as Pokemon);
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [nextPage, setNextPage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     getPokemons();
@@ -48,7 +51,7 @@ const PokemonProvider = ({ children }: ModalProviderProps) => {
       height: data.height,
       name: data.name,
       base_experience: data.base_experience,
-      image_src: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.id}.png`,
+      image_src: getImageUrlWithId(data.id),
       stats: data.stats.map((stat: any) => {
         return {
           base_stat: stat.base_stat,
@@ -56,34 +59,35 @@ const PokemonProvider = ({ children }: ModalProviderProps) => {
         };
       }),
     };
-    console.log(newPokemon);
+
     setPokemon(newPokemon);
   }
 
   async function getPokemons() {
-    let response;
-    if (!nextPage) {
-      response = await api.get("/pokemon");
-    } else {
-      response = await api.get(nextPage);
-    }
-    const { data } = response;
+    setLoading(true);
+    const { data } = await api.get(nextPage ? nextPage : "/pokemon");
+
     setNextPage(data.next);
+
     const newPokemons = data.results.map((pokemon: Pokemon) => {
-      const id = pokemon.url?.replace(/[^0-9]/g, "").substring(1);
+      const id = pokemon.url?.replace(/[^0-9]/g, "").substring(1) || "";
       return {
         id,
         name: pokemon.name[0].toUpperCase() + pokemon.name.substring(1),
-        image_src: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`,
+        image_src: getImageUrlWithId(id),
       };
     });
-    setPokemons([...pokemons, ...newPokemons]);
+
+    setTimeout(() => {
+      setPokemons([...pokemons, ...newPokemons]);
+      setLoading(false);
+    }, 1000);
     return pokemons;
   }
 
   return (
     <PokemonContext.Provider
-      value={{ getPokemon, pokemon, getPokemons, pokemons }}
+      value={{ loading, getPokemon, pokemon, getPokemons, pokemons }}
     >
       {children}
     </PokemonContext.Provider>

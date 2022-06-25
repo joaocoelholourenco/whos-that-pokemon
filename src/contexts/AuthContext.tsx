@@ -1,5 +1,12 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -22,13 +29,34 @@ function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
   const [authenticated, setAuthenticated] = useState(false);
 
-  function signIn({ email, password }: SignInFormProps): void {
-    setAuthenticated(true);
+  useEffect(() => {
+    const authentication = localStorage.getItem("authentication");
 
-    navigate("/");
+    console.log(authentication);
+
+    if (authentication) {
+      setAuthenticated(true);
+      navigate("/");
+    }
+  }, [authenticated]);
+
+  function signIn({ email, password }: SignInFormProps): void {
+    try {
+      if (email !== "joao@gmail.com") throw new Error("Usuário não encontrado");
+      if (password !== "123456") throw new Error("Senha ou email incorreto");
+
+      localStorage.setItem("authentication", "fake-token");
+
+      setAuthenticated(true);
+      navigate("/");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   }
   function signOut(): void {
     setAuthenticated(false);
+
+    localStorage.removeItem("authentication");
 
     navigate("/login");
   }

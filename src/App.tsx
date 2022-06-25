@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import { ReactElement } from "react";
 import { ModalProvider } from "./contexts/ModalContext";
 import { PokemonProvider } from "./contexts/PokemonContext";
+import { ToastContainer } from "react-toastify";
 
 interface CustomRouteProps {
   children: ReactElement;
@@ -27,6 +28,7 @@ function App() {
       <AuthProvider>
         <ModalProvider>
           <PokemonProvider>
+            <ToastContainer />
             <Routes>
               <Route
                 path="/"
